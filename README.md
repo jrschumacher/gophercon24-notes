@@ -75,3 +75,38 @@ graph LR
 ```
 
 The major change is the pre-training and then appending task specific code to the end of the pipeline. The task specific code is often called `embedding` or `feature representation`.
+
+Training on meta tasks was intended to help with further model enhancements however as they trained on the autocomplete models on the vast data of the internet they discovered the emergent behavior of gen ai.
+
+2022+: Gen AI
+
+```mermaid
+
+graph LR
+
+  subgraph others //compute heavy//
+  A-->PT
+  B-->PT
+  C-->PT
+
+  PT-->P1
+  PT-->P2
+  PT-->P3
+
+  P1-->FT
+  P2-->FT
+  P3-->FT
+  end
+
+  subgraph me //func call//
+  P-->I
+  FT-->I
+
+  I-->O
+  end
+
+  P[prompt]
+  FT[fine tuning]
+  I[infer]
+  O[out]
+```
