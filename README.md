@@ -78,6 +78,9 @@ The major change is the pre-training and then appending task specific code to th
 
 Training on meta tasks was intended to help with further model enhancements however as they trained on the autocomplete models on the vast data of the internet they discovered the emergent behavior of gen ai.
 
+> [!NOTE]
+> emergent just means unexpected in this context
+
 2022+: Gen AI
 
 ```mermaid
@@ -110,3 +113,77 @@ graph LR
   I[infer]
   O[out]
 ```
+
+LLM generates a list of next tokens with a probability and then passes it as the new prompt. One of the tokens might be the end of sentence token.
+
+
+```mermaid
+flowchart LR
+
+  A[prompt] -- "A gopher is..." --> LLM
+
+  LLM --> T1[1. a\n2. animal\n...\n30k. flea\n]
+
+  T1 --> A
+```
+
+Temperature was added to shuffle the ranked words to give some variance on the output.
+
+### Misc
+
+OpenAI initiated the process of using SSEs (server sent events) with responses vs websockets. Returning SSE vs the finished response gives a better UX to users. Using websockets would work, but it would be moving against the trend.
+
+System prompts `client.Roles.System` are used to give context to the LLM,
+
+Context is injected with every prompt. There are ways to reduce this burden, but its not consistent. Remember the greatest burden is the generation.
+
+When the long context window its hard to determine how to determine which aspect of the context caused the issue. If there is a large context window you can use an LLM to summarize and reduce the window size.
+
+### Retrieval Augmented Generation
+
+```mermaid
+flowchart LR
+  D-->C1
+  D-->C2
+  D-->CN
+  D-->CX
+
+  C1-->DV
+  C2-->DV
+  CN-->DV
+  CX-->DV
+
+  DV-->PT
+  PT-->LLM
+  LLM-->O
+
+  D[Docs]
+  C1[Chunk 1]
+  C2[Chunk 2]
+  CN[...]
+  CX[Chunk N]
+  DV[Vector DB]
+  PT[Prompt Temp]
+  O[Out]
+```
+
+DB Vector is a closeness via cosign-sim, l2 distance, etc
+
+Multi-lingual models would theoretically share a similar vector space.
+
+Advanced RAG
+
+- hierarchical search finding most relevant chunk and related context
+- elastic search then vector
+
+If the context is 3 pages a summary may not be sufficient and the enrichment should be fine-tuned to the problem.
+
+Bridge-tower model supports embedding images and text
+
+Perf in enterprise:
+
+- how long will it take to vectorize the docs
+- how log will it take to search the docs
+
+LLM is judge: use the LLM to rate if we answered the users question.
+
